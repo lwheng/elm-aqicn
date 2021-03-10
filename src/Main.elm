@@ -2,8 +2,9 @@ module Main exposing (..)
 
 import Browser
 import Browser.Navigation as BN
-import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
+import Element as E
+import Element.Input as EI
+import Html exposing (Html)
 import Url exposing (Url)
 
 
@@ -29,11 +30,12 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Hello World"
     , body =
-        [ div []
-            [ button [ onClick Decrement ] [ text "-" ]
-            , div [] [ text (String.fromInt model) ]
-            , button [ onClick Increment ] [ text "+" ]
-            ]
+        [ E.layout [] <|
+            E.column []
+                [ EI.button [] { onPress = Just Decrement, label = E.text "-" }
+                , E.text (String.fromInt model)
+                , EI.button [] { onPress = Just Increment, label = E.text "+" }
+                ]
         ]
     }
 
