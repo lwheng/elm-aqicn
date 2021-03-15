@@ -2,6 +2,8 @@
 
 set -e
 
+elm-format --yes .
+
 js="js/elm.js"
 min="js/elm.min.js"
 

@@ -15,14 +15,33 @@ main =
 
 
 type Model
-    = Failure
+    = Failure String
     | Loading
-    | Success String
+    | Success AirQuality
+
+
+type alias AirQuality =
+    { name : String
+    , url : String
+    , pm10 : Int
+    , pm25 : Int
+    , iso : String
+    }
+
+
+defaultAirQuality : AirQuality
+defaultAirQuality =
+    { name = "Demo City"
+    , url = "http://www.example.org"
+    , pm10 = 10
+    , pm25 = 25
+    , iso = "2021-01-01T00:00:00+08:00"
+    }
 
 
 type Msg
     = Refresh
-    | ReceivedData (Result Http.Error String)
+    | ReceivedData (Result Http.Error AirQuality)
 
 
 init : Int -> Url -> BN.Key -> ( Model, Cmd Msg )
@@ -35,18 +54,21 @@ view model =
     { title = "lwheng.github.io"
     , body =
         [ E.layout [] <|
-            E.column []
-                [ E.text <|
-                    case model of
-                        Failure ->
-                            "Failure"
+            case model of
+                Failure msg ->
+                    E.text msg
 
-                        Loading ->
-                            "Loading"
+                Loading ->
+                    E.text "Loading"
 
-                        Success s ->
-                            s
-                ]
+                Success s ->
+                    E.column []
+                        [ E.text <| "Name: " ++ s.name
+                        , E.text <| "Url: " ++ s.url
+                        , E.text <| "PM10: " ++ String.fromInt s.pm10
+                        , E.text <| "PM25: " ++ String.fromInt s.pm25
+                        , E.text <| "Correct as at: " ++ s.iso
+                        ]
         ]
     }
 
@@ -59,25 +81,25 @@ update msg model =
 
         ReceivedData response ->
             case response of
-                Ok json ->
-                    ( Success json, Cmd.none )
+                Ok val ->
+                    ( Success val, Cmd.none )
 
                 Err e ->
                     case e of
                         Http.BadUrl err ->
-                            ( Success err, Cmd.none )
+                            ( Failure err, Cmd.none )
 
                         Http.Timeout ->
-                            ( Success "Timeout!", Cmd.none )
+                            ( Failure "Timeout!", Cmd.none )
 
                         Http.NetworkError ->
-                            ( Success "NetworkError", Cmd.none )
+                            ( Failure "NetworkError", Cmd.none )
 
                         Http.BadStatus statusCode ->
-                            ( Success <| String.fromInt statusCode, Cmd.none )
+                            ( Failure <| String.fromInt statusCode, Cmd.none )
 
                         Http.BadBody err ->
-                            ( Success err, Cmd.none )
+                            ( Failure err, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -99,10 +121,15 @@ fetchAQIData : Cmd Msg
 fetchAQIData =
     Http.get
         { url = "https://api.waqi.info/feed/geo:1.369738;103.849338/?token=49441845ec0f10680db9bafd791d935630d6bb28"
-        , expect = Http.expectJson ReceivedData aqiDecoder
+        , expect = Http.expectJson ReceivedData airQualityDecoder
         }
 
 
-aqiDecoder : Json.Decoder String
-aqiDecoder =
-    Json.field "data" (Json.field "city" (Json.field "name" Json.string))
+airQualityDecoder : Json.Decoder AirQuality
+airQualityDecoder =
+    Json.map5 AirQuality
+        (Json.at [ "data", "city", "name" ] Json.string)
+        (Json.at [ "data", "city", "url" ] Json.string)
+        (Json.at [ "data", "iaqi", "pm10", "v" ] Json.int)
+        (Json.at [ "data", "iaqi", "pm25", "v" ] Json.int)
+        (Json.at [ "data", "time", "iso" ] Json.string)
