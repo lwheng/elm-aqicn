@@ -7,41 +7,15 @@ import Element.Input as EI
 import Html exposing (Html)
 import Http as Http
 import Json.Decode as Json
+import Model.AQI exposing (..)
+import Model.Model exposing (..)
+import Update.Msg exposing (..)
 import Url exposing (Url)
+import View.AQICard exposing (..)
 
 
 main =
     Browser.application { init = init, view = view, update = update, subscriptions = subscriptions, onUrlRequest = onUrlRequest, onUrlChange = onUrlChange }
-
-
-type Model
-    = Failure String
-    | Loading
-    | Success AirQuality
-
-
-type alias AirQuality =
-    { name : String
-    , url : String
-    , pm10 : Int
-    , pm25 : Int
-    , iso : String
-    }
-
-
-defaultAirQuality : AirQuality
-defaultAirQuality =
-    { name = "Demo City"
-    , url = "http://www.example.org"
-    , pm10 = 10
-    , pm25 = 25
-    , iso = "2021-01-01T00:00:00+08:00"
-    }
-
-
-type Msg
-    = Refresh
-    | ReceivedData (Result Http.Error AirQuality)
 
 
 init : Int -> Url -> BN.Key -> ( Model, Cmd Msg )
@@ -62,13 +36,7 @@ view model =
                     E.text "Loading"
 
                 Success s ->
-                    E.column []
-                        [ E.text <| "Name: " ++ s.name
-                        , E.text <| "Url: " ++ s.url
-                        , E.text <| "PM10: " ++ String.fromInt s.pm10
-                        , E.text <| "PM25: " ++ String.fromInt s.pm25
-                        , E.text <| "Correct as at: " ++ s.iso
-                        ]
+                    aqiCard s
         ]
     }
 
@@ -121,15 +89,17 @@ fetchAQIData : Cmd Msg
 fetchAQIData =
     Http.get
         { url = "https://api.waqi.info/feed/geo:1.369738;103.849338/?token=49441845ec0f10680db9bafd791d935630d6bb28"
-        , expect = Http.expectJson ReceivedData airQualityDecoder
+        , expect = Http.expectJson ReceivedData aqiDecoder
         }
 
 
-airQualityDecoder : Json.Decoder AirQuality
-airQualityDecoder =
-    Json.map5 AirQuality
+aqiDecoder : Json.Decoder AQI
+aqiDecoder =
+    Json.map7 AQI
         (Json.at [ "data", "city", "name" ] Json.string)
         (Json.at [ "data", "city", "url" ] Json.string)
         (Json.at [ "data", "iaqi", "pm10", "v" ] Json.int)
         (Json.at [ "data", "iaqi", "pm25", "v" ] Json.int)
         (Json.at [ "data", "time", "iso" ] Json.string)
+        (Json.at [ "data", "iaqi", "t", "v" ] Json.int)
+        (Json.at [ "data", "iaqi", "h", "v" ] Json.int)
