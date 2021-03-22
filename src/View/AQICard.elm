@@ -1,13 +1,15 @@
 module View.AQICard exposing (..)
 
 import Element as E
+import Element.Background as Background
 import Model.AQI exposing (..)
+import Model.AirQualityLevel as AirQualityLevel
 import Update.Msg exposing (..)
 
 
 aqiCard : AQI -> E.Element Msg
 aqiCard aqi =
-    E.column []
+    E.column [ Background.color <| AirQualityLevel.color <| AirQualityLevel.pm25ToAirQualityLevel aqi.pm25 ]
         [ E.text <| "Name: " ++ aqi.name
         , E.text <| "Url: " ++ aqi.url
         , E.text <| "PM10: " ++ String.fromInt aqi.pm10

@@ -1,5 +1,7 @@
 module Model.AirQualityLevel exposing (..)
 
+import Element as E
+
 
 type AirQualityLevel
     = Good
@@ -8,6 +10,28 @@ type AirQualityLevel
     | Unhealthy
     | VeryUnhealthy
     | Hazardous
+
+
+color : AirQualityLevel -> E.Color
+color level =
+    case level of
+        Good ->
+            E.rgb255 0 142 93
+
+        Moderate ->
+            E.rgb255 255 217 66
+
+        UnhealthySensitiveGroup ->
+            E.rgb255 255 142 58
+
+        Unhealthy ->
+            E.rgb255 207 2 48
+
+        VeryUnhealthy ->
+            E.rgb255 94 4 139
+
+        Hazardous ->
+            E.rgb255 120 1 33
 
 
 pm25ToAirQualityLevel : Int -> AirQualityLevel
