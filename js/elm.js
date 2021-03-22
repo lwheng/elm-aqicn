@@ -5366,7 +5366,7 @@ var $elm$json$Json$Decode$at = F2(
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$map7 = _Json_map7;
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$Main$aqiDecoder = A8(
+var $author$project$Model$AQI$aqiDecoder = A8(
 	$elm$json$Json$Decode$map7,
 	$author$project$Model$AQI$AQI,
 	A2(
@@ -6193,7 +6193,7 @@ var $elm$http$Http$get = function (r) {
 };
 var $author$project$Main$fetchAQIData = $elm$http$Http$get(
 	{
-		cj: A2($elm$http$Http$expectJson, $author$project$Update$Msg$ReceivedData, $author$project$Main$aqiDecoder),
+		cj: A2($elm$http$Http$expectJson, $author$project$Update$Msg$ReceivedData, $author$project$Model$AQI$aqiDecoder),
 		dB: 'https://api.waqi.info/feed/geo:1.369738;103.849338/?token=49441845ec0f10680db9bafd791d935630d6bb28'
 	});
 var $author$project$Main$init = F3(
@@ -11782,6 +11782,10 @@ var $mdgriffith$elm_ui$Element$column = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
+	return {$: 2, a: a};
+};
+var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
 var $author$project$Model$AirQualityLevel$Good = 0;
 var $author$project$Model$AirQualityLevel$Hazardous = 5;
 var $author$project$Model$AirQualityLevel$Moderate = 1;
@@ -11791,34 +11795,95 @@ var $author$project$Model$AirQualityLevel$VeryUnhealthy = 4;
 var $author$project$Model$AirQualityLevel$pm25ToAirQualityLevel = function (pm25) {
 	return ((0 <= pm25) && (pm25 <= 50)) ? 0 : (((51 <= pm25) && (pm25 <= 100)) ? 1 : (((101 <= pm25) && (pm25 <= 150)) ? 2 : (((151 <= pm25) && (pm25 <= 200)) ? 3 : (((201 <= pm25) && (pm25 <= 300)) ? 4 : 5))));
 };
+var $mdgriffith$elm_ui$Internal$Model$AsRow = 0;
+var $mdgriffith$elm_ui$Internal$Model$asRow = 0;
+var $mdgriffith$elm_ui$Element$row = F2(
+	function (attrs, children) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asRow,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.ab + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.E)),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+						attrs))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
 var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
 	return {$: 2, a: a};
 };
 var $mdgriffith$elm_ui$Element$text = function (content) {
 	return $mdgriffith$elm_ui$Internal$Model$Text(content);
 };
+var $author$project$Model$AirQualityLevel$toString = function (level) {
+	switch (level) {
+		case 0:
+			return 'Good';
+		case 1:
+			return 'Moderate';
+		case 2:
+			return 'Unhealthy for Sensitive Groups';
+		case 3:
+			return 'Unhealthy';
+		case 4:
+			return 'Very Unhealthy';
+		default:
+			return 'Hazardous';
+	}
+};
 var $author$project$View$AQICard$aqiCard = function (aqi) {
+	var airQualityLevel = $author$project$Model$AirQualityLevel$pm25ToAirQualityLevel(aqi.cS);
 	return A2(
-		$mdgriffith$elm_ui$Element$column,
+		$mdgriffith$elm_ui$Element$row,
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$Background$color(
-				$author$project$Model$AirQualityLevel$color(
-					$author$project$Model$AirQualityLevel$pm25ToAirQualityLevel(aqi.cS)))
+				$author$project$Model$AirQualityLevel$color(airQualityLevel)),
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 			]),
 		_List_fromArray(
 			[
-				$mdgriffith$elm_ui$Element$text('Name: ' + aqi.cI),
-				$mdgriffith$elm_ui$Element$text('Url: ' + aqi.dB),
-				$mdgriffith$elm_ui$Element$text(
-				'PM10: ' + $elm$core$String$fromInt(aqi.cR)),
-				$mdgriffith$elm_ui$Element$text(
-				'PM25: ' + $elm$core$String$fromInt(aqi.cS)),
-				$mdgriffith$elm_ui$Element$text(
-				'Temperate (°C): ' + $elm$core$String$fromInt(aqi.df)),
-				$mdgriffith$elm_ui$Element$text(
-				'Humidity: ' + $elm$core$String$fromInt(aqi.cp)),
-				$mdgriffith$elm_ui$Element$text('Correct as at: ' + aqi.cC)
+				A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Background$color(
+						$author$project$Model$AirQualityLevel$color(airQualityLevel)),
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$text(
+						'PM25: ' + $elm$core$String$fromInt(aqi.cS)),
+						$mdgriffith$elm_ui$Element$text(
+						'Air Pollution Level: ' + $author$project$Model$AirQualityLevel$toString(airQualityLevel))
+					])),
+				A2(
+				$mdgriffith$elm_ui$Element$column,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Background$color(
+						$author$project$Model$AirQualityLevel$color(airQualityLevel)),
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					]),
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$text('Name: ' + aqi.cI),
+						$mdgriffith$elm_ui$Element$text('Url: ' + aqi.dB),
+						$mdgriffith$elm_ui$Element$text(
+						'PM10: ' + $elm$core$String$fromInt(aqi.cR)),
+						$mdgriffith$elm_ui$Element$text(
+						'Temperature (°C): ' + $elm$core$String$fromInt(aqi.df)),
+						$mdgriffith$elm_ui$Element$text(
+						'Humidity: ' + $elm$core$String$fromInt(aqi.cp)),
+						$mdgriffith$elm_ui$Element$text('Correct as at: ' + aqi.cC)
+					]))
 			]));
 };
 var $mdgriffith$elm_ui$Internal$Model$OnlyDynamic = F2(

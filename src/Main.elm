@@ -6,8 +6,7 @@ import Element as E
 import Element.Input as EI
 import Html exposing (Html)
 import Http as Http
-import Json.Decode as Json
-import Model.AQI exposing (..)
+import Model.AQI as AQI
 import Model.Model exposing (..)
 import Update.Msg exposing (..)
 import Url exposing (Url)
@@ -89,17 +88,5 @@ fetchAQIData : Cmd Msg
 fetchAQIData =
     Http.get
         { url = "https://api.waqi.info/feed/geo:1.369738;103.849338/?token=49441845ec0f10680db9bafd791d935630d6bb28"
-        , expect = Http.expectJson ReceivedData aqiDecoder
+        , expect = Http.expectJson ReceivedData AQI.aqiDecoder
         }
-
-
-aqiDecoder : Json.Decoder AQI
-aqiDecoder =
-    Json.map7 AQI
-        (Json.at [ "data", "city", "name" ] Json.string)
-        (Json.at [ "data", "city", "url" ] Json.string)
-        (Json.at [ "data", "iaqi", "pm10", "v" ] Json.int)
-        (Json.at [ "data", "iaqi", "pm25", "v" ] Json.int)
-        (Json.at [ "data", "time", "iso" ] Json.string)
-        (Json.at [ "data", "iaqi", "t", "v" ] Json.int)
-        (Json.at [ "data", "iaqi", "h", "v" ] Json.int)

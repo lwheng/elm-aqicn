@@ -12,6 +12,28 @@ type AirQualityLevel
     | Hazardous
 
 
+toString : AirQualityLevel -> String
+toString level =
+    case level of
+        Good ->
+            "Good"
+
+        Moderate ->
+            "Moderate"
+
+        UnhealthySensitiveGroup ->
+            "Unhealthy for Sensitive Groups"
+
+        Unhealthy ->
+            "Unhealthy"
+
+        VeryUnhealthy ->
+            "Very Unhealthy"
+
+        Hazardous ->
+            "Hazardous"
+
+
 color : AirQualityLevel -> E.Color
 color level =
     case level of
