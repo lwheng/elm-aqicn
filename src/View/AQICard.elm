@@ -2,6 +2,7 @@ module View.AQICard exposing (..)
 
 import Element as E
 import Element.Background as Background
+import Element.Font as Font
 import Model.AQI exposing (..)
 import Model.AirQualityLevel as AirQualityLevel
 import Update.Msg exposing (..)
@@ -12,13 +13,30 @@ aqiCard aqi =
     let
         airQualityLevel =
             AirQualityLevel.pm25ToAirQualityLevel aqi.pm25
+
+        airQualityColor =
+            AirQualityLevel.color airQualityLevel
+
+        airQualityTextColor =
+            AirQualityLevel.textColor airQualityLevel
     in
-    E.row [ Background.color <| AirQualityLevel.color airQualityLevel, E.width E.fill ]
-        [ E.column [ Background.color <| AirQualityLevel.color airQualityLevel, E.width E.fill ]
-            [ E.text <| "PM25: " ++ String.fromInt aqi.pm25
-            , E.text <| "Air Pollution Level: " ++ AirQualityLevel.toString airQualityLevel
+    E.row
+        [ Background.color <| AirQualityLevel.color airQualityLevel
+        , E.width E.fill
+        , E.padding 10
+        ]
+        [ E.column
+            [ Background.color <| AirQualityLevel.color airQualityLevel
+            , E.padding 10
             ]
-        , E.column [ Background.color <| AirQualityLevel.color airQualityLevel, E.width E.fill ]
+            [ view_aqiPM25 airQualityTextColor aqi.pm25
+            , view_aqiAirQualityLevel airQualityTextColor airQualityLevel
+            ]
+        , E.column
+            [ Background.color airQualityColor
+            , E.padding 10
+            , E.width E.fill
+            ]
             [ E.text <| "Name: " ++ aqi.name
             , E.text <| "Url: " ++ aqi.url
             , E.text <| "PM10: " ++ String.fromInt aqi.pm10
@@ -27,3 +45,25 @@ aqiCard aqi =
             , E.text <| "Correct as at: " ++ aqi.iso
             ]
         ]
+
+
+view_aqiAirQualityLevel : E.Color -> AirQualityLevel.AirQualityLevel -> E.Element Msg
+view_aqiAirQualityLevel textColor airQualityLevel =
+    E.el
+        [ E.width E.fill
+        , Font.center
+        , Font.color textColor
+        , Font.shadow { offset = ( 3, 3 ), blur = 5, color = E.rgb255 0 0 0 }
+        ]
+        (E.text <| AirQualityLevel.toString airQualityLevel)
+
+
+view_aqiPM25 : E.Color -> Int -> E.Element Msg
+view_aqiPM25 textColor pm25 =
+    E.el
+        [ E.centerX
+        , Font.color textColor
+        , Font.shadow { offset = ( 3, 3 ), blur = 5, color = E.rgb255 0 0 0 }
+        , Font.size 64
+        ]
+        (E.text <| String.fromInt pm25)
