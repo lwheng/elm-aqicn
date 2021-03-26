@@ -34,6 +34,28 @@ toString level =
             "Hazardous"
 
 
+textColor : AirQualityLevel -> E.Color
+textColor level =
+    case level of
+        Good ->
+            E.rgb255 255 255 255
+
+        Moderate ->
+            E.rgb255 0 0 0
+
+        UnhealthySensitiveGroup ->
+            E.rgb255 0 0 0
+
+        Unhealthy ->
+            E.rgb255 255 255 255
+
+        VeryUnhealthy ->
+            E.rgb255 255 255 255
+
+        Hazardous ->
+            E.rgb255 255 255 255
+
+
 color : AirQualityLevel -> E.Color
 color level =
     case level of
