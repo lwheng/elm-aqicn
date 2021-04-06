@@ -27,7 +27,7 @@ aqiCard aqi =
         ]
         [ E.column
             [ Background.color <| AirQualityLevel.color airQualityLevel
-            , E.padding 10
+            , E.padding 20
             ]
             [ view_aqiPM25 airQualityTextColor aqi.pm25
             , view_aqiAirQualityLevel airQualityTextColor airQualityLevel
@@ -53,7 +53,8 @@ view_aqiAirQualityLevel textColor airQualityLevel =
         [ E.width E.fill
         , Font.center
         , Font.color textColor
-        , Font.shadow { offset = ( 3, 3 ), blur = 5, color = E.rgb255 0 0 0 }
+        , Font.shadow { offset = ( 2, 2 ), blur = 3, color = E.rgb255 0 0 0 }
+        , Font.size 32
         ]
         (E.text <| AirQualityLevel.toString airQualityLevel)
 
@@ -63,7 +64,7 @@ view_aqiPM25 textColor pm25 =
     E.el
         [ E.centerX
         , Font.color textColor
-        , Font.shadow { offset = ( 3, 3 ), blur = 5, color = E.rgb255 0 0 0 }
-        , Font.size 64
+        , Font.shadow { offset = ( 2, 2 ), blur = 3, color = E.rgb255 0 0 0 }
+        , Font.size 128
         ]
         (E.text <| String.fromInt pm25)

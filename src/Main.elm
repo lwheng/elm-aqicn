@@ -6,10 +6,13 @@ import Element as E
 import Element.Input as EI
 import Html exposing (Html)
 import Http as Http
+import List exposing (..)
 import Model.AQI as AQI
+import Model.Locations as L
 import Model.Model exposing (..)
 import Update.Msg exposing (..)
 import Url exposing (Url)
+import Utils.LocationURL as LURL
 import View.AQICard exposing (..)
 
 
@@ -19,7 +22,7 @@ main =
 
 init : Int -> Url -> BN.Key -> ( Model, Cmd Msg )
 init _ _ _ =
-    ( Loading, fetchAQIData )
+    ( initModel, fetchAllLocation )
 
 
 view : Model -> Browser.Document Msg
@@ -27,15 +30,12 @@ view model =
     { title = "lwheng.github.io"
     , body =
         [ E.layout [] <|
-            case model of
-                Failure msg ->
-                    E.text msg
+            case model.aqis of
+                [] ->
+                    E.text "Nothing to display"
 
-                Loading ->
-                    E.text "Loading"
-
-                Success s ->
-                    aqiCard s
+                xs ->
+                    E.column [] <| map aqiCard xs
         ]
     }
 
@@ -44,29 +44,29 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Refresh ->
-            ( Loading, Cmd.none )
+            ( initModel, fetchAllLocation )
 
         ReceivedData response ->
             case response of
                 Ok val ->
-                    ( Success val, Cmd.none )
+                    ( { model | aqis = val :: model.aqis }, Cmd.none )
 
                 Err e ->
                     case e of
                         Http.BadUrl err ->
-                            ( Failure err, Cmd.none )
+                            ( { initModel | status = "Bad Url: " ++ err }, Cmd.none )
 
                         Http.Timeout ->
-                            ( Failure "Timeout!", Cmd.none )
+                            ( { initModel | status = "Request timeout!" }, Cmd.none )
 
                         Http.NetworkError ->
-                            ( Failure "NetworkError", Cmd.none )
+                            ( { initModel | status = "Network Error" }, Cmd.none )
 
                         Http.BadStatus statusCode ->
-                            ( Failure <| String.fromInt statusCode, Cmd.none )
+                            ( { initModel | status = "Bad Status Code: " ++ String.fromInt statusCode }, Cmd.none )
 
                         Http.BadBody err ->
-                            ( Failure err, Cmd.none )
+                            ( { initModel | status = err }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -84,9 +84,14 @@ onUrlChange _ =
     Refresh
 
 
-fetchAQIData : Cmd Msg
-fetchAQIData =
+fetchAllLocation : Cmd Msg
+fetchAllLocation =
+    Cmd.batch <| map fetchOneLocation L.locations
+
+
+fetchOneLocation : L.Location -> Cmd Msg
+fetchOneLocation loc =
     Http.get
-        { url = "https://api.waqi.info/feed/geo:1.369738;103.849338/?token=49441845ec0f10680db9bafd791d935630d6bb28"
+        { url = Url.toString <| LURL.mkLocationURL loc
         , expect = Http.expectJson ReceivedData AQI.aqiDecoder
         }
