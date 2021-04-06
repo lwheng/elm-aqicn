@@ -22,13 +22,13 @@ toString level =
             "Moderate"
 
         UnhealthySensitiveGroup ->
-            "Unhealthy for Sensitive Groups"
+            "Unhealthy for\nSensitive Groups"
 
         Unhealthy ->
             "Unhealthy"
 
         VeryUnhealthy ->
-            "Very Unhealthy"
+            "Very\nUnhealthy"
 
         Hazardous ->
             "Hazardous"

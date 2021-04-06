@@ -3,7 +3,12 @@ module Model.Model exposing (..)
 import Model.AQI exposing (..)
 
 
-type Model
-    = Failure String
-    | Loading
-    | Success AQI
+type alias Model =
+    { aqis : List AQI
+    , status : String
+    }
+
+
+initModel : Model
+initModel =
+    { aqis = [], status = "Nothing to display" }
