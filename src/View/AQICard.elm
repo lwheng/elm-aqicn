@@ -23,6 +23,7 @@ aqiCard aqi =
     E.row
         [ Background.color <| AirQualityLevel.color airQualityLevel
         , E.width E.fill
+        , E.height E.fill
         , E.padding 10
         ]
         [ E.column
@@ -39,9 +40,9 @@ aqiCard aqi =
             ]
             [ E.text <| "Name: " ++ aqi.name
             , E.text <| "Url: " ++ aqi.url
-            , E.text <| "PM10: " ++ String.fromInt aqi.pm10
-            , E.text <| "Temperature (°C): " ++ String.fromInt aqi.t
-            , E.text <| "Humidity: " ++ String.fromInt aqi.h
+            , E.text <| "PM10: " ++ String.fromFloat aqi.pm10
+            , E.text <| "Temperature (°C): " ++ String.fromFloat aqi.t
+            , E.text <| "Humidity: " ++ String.fromFloat aqi.h
             , E.text <| "Correct as at: " ++ aqi.iso
             ]
         ]
@@ -59,7 +60,7 @@ view_aqiAirQualityLevel textColor airQualityLevel =
         (E.text <| AirQualityLevel.toString airQualityLevel)
 
 
-view_aqiPM25 : E.Color -> Int -> E.Element Msg
+view_aqiPM25 : E.Color -> Float -> E.Element Msg
 view_aqiPM25 textColor pm25 =
     E.el
         [ E.centerX
@@ -67,4 +68,4 @@ view_aqiPM25 textColor pm25 =
         , Font.shadow { offset = ( 2, 2 ), blur = 3, color = E.rgb255 0 0 0 }
         , Font.size 128
         ]
-        (E.text <| String.fromInt pm25)
+        (E.text <| String.fromFloat pm25)

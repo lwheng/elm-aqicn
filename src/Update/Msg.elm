@@ -7,4 +7,4 @@ import Model.Regions exposing (..)
 
 type Msg
     = Refresh
-    | ReceivedData (Result Http.Error AQI)
+    | ReceivedData Region (Result Http.Error AQI)

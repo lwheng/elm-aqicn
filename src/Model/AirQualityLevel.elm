@@ -78,7 +78,7 @@ color level =
             E.rgb255 120 1 33
 
 
-pm25ToAirQualityLevel : Int -> AirQualityLevel
+pm25ToAirQualityLevel : Float -> AirQualityLevel
 pm25ToAirQualityLevel pm25 =
     if 0 <= pm25 && pm25 <= 50 then
         Good

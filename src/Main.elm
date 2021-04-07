@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Browser.Navigation as BN
+import Dict as Dict
 import Element as E
 import Element.Input as EI
 import Html exposing (Html)
@@ -10,6 +11,7 @@ import List exposing (..)
 import Model.AQI as AQI
 import Model.Locations as L
 import Model.Model exposing (..)
+import Model.Regions as R
 import Update.Msg exposing (..)
 import Url exposing (Url)
 import Utils.LocationURL as LURL
@@ -30,12 +32,11 @@ view model =
     { title = "lwheng.github.io"
     , body =
         [ E.layout [] <|
-            case model.aqis of
-                [] ->
-                    E.text "Nothing to display"
+            if Dict.isEmpty model.aqis then
+                E.text "Nothing to display"
 
-                xs ->
-                    E.column [] <| map aqiCard xs
+            else
+                E.column [ E.width E.fill, E.height E.fill ] <| map aqiCard <| Dict.values model.aqis
         ]
     }
 
@@ -46,10 +47,10 @@ update msg model =
         Refresh ->
             ( initModel, fetchAllLocation )
 
-        ReceivedData response ->
+        ReceivedData region response ->
             case response of
                 Ok val ->
-                    ( { model | aqis = val :: model.aqis }, Cmd.none )
+                    ( { model | aqis = Dict.insert (R.toInt region) val model.aqis }, Cmd.none )
 
                 Err e ->
                     case e of
@@ -93,5 +94,5 @@ fetchOneLocation : L.Location -> Cmd Msg
 fetchOneLocation loc =
     Http.get
         { url = Url.toString <| LURL.mkLocationURL loc
-        , expect = Http.expectJson ReceivedData AQI.aqiDecoder
+        , expect = Http.expectJson (ReceivedData loc.region) AQI.aqiDecoder
         }
