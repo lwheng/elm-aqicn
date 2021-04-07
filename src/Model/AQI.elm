@@ -6,8 +6,8 @@ import Json.Decode as Json
 type alias AQI =
     { name : String
     , url : String
-    , pm10 : Float
-    , pm25 : Float
+    , pm10 : Float -- PM10
+    , pm25 : Float -- PM2.5
     , iso : String
     , t : Float
     , h : Float
