@@ -12633,7 +12633,7 @@ var $author$project$Main$view = function (model) {
 						$author$project$View$AQICard$aqiCard,
 						$elm$core$Dict$values(model.aj))))
 			]),
-		dA: 'lwheng.github.io'
+		dA: 'elm-aqicn'
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$application(

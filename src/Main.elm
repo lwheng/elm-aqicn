@@ -29,7 +29,7 @@ init _ _ _ =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "lwheng.github.io"
+    { title = "elm-aqicn"
     , body =
         [ E.layout [] <|
             if Dict.isEmpty model.aqis then
